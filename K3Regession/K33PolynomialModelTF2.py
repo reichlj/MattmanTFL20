@@ -4,13 +4,6 @@ import matplotlib.pyplot as plt
 
 print('TensorFlow Version',tf.__version__)
 
-def model(X, w):
-    terms = []
-    for i in range(len(trY_coeffs)):
-        term = tf.multiply(w[i], tf.pow(X, i))
-        terms.append(term)
-    return tf.add_n(terms)
-
 learning_rate = 0.01
 training_epochs = 40
 sample_size = 101
@@ -22,23 +15,21 @@ for i in range(len(trY_coeffs)):
     trY += trY_coeffs[i] * np.power(trX, i)
 trY += np.random.randn(*trX.shape) * 1.5
 
-X = tf.placeholder(tf.float32)
-Y = tf.placeholder(tf.float32)
+X = tf.constant(trX, dtype=tf.float32)
+Y = tf.constant(trY, dtype=tf.float32)
 w = tf.Variable([0.] * len(trY_coeffs), name="parameters")
-y_model = model(X, w)
-cost = tf.pow(Y-y_model, 2)
-train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 
-sess = tf.Session()
-init = tf.global_variables_initializer()
-sess.run(init)
+model = lambda _X, _w: tf.add_n([tf.multiply(_w[i], tf.pow(_X, i))
+                                 for i in range(len(trY_coeffs))])
+y_model = lambda: model(X, w)
+cost = lambda: tf.pow(Y - y_model(), 2)
+
+train_op = tf.keras.optimizers.SGD(learning_rate, momentum=0.5)
 for epoch in range(training_epochs):
-    for (x, y) in zip(trX, trY):
-        sess.run(train_op, feed_dict={X: x, Y: y})
-        print(sess.run(w))
-w_val = sess.run(w)
-sess.close()
-print(w_val)
+    train_op.minimize(cost,w)
+
+w_val = w.value()
+print(w_val.numpy())
 
 plt.scatter(trX, trY)
 trY2 = 0

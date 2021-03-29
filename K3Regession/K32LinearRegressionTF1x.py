@@ -8,7 +8,7 @@ def model(X, w):
     return tf.multiply(X, w)
 
 learning_rate = 0.01
-training_epochs = 100
+training_epochs = 20
 sample_size = 101
 x_train = np.linspace(-1, 1, sample_size)
 y_train = 2 * x_train + np.random.randn(*x_train.shape) * 0.33
@@ -26,6 +26,7 @@ sess.run(init)
 for epoch in range(training_epochs):
     for (x, y) in zip(x_train, y_train):
         sess.run(train_op, feed_dict={X: x, Y: y})
+        print(sess.run(w))
 w_val = sess.run(w)
 sess.close()
 
