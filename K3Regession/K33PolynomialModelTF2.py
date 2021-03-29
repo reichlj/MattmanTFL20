@@ -15,6 +15,7 @@ for i in range(len(trY_coeffs)):
     trY += trY_coeffs[i] * np.power(trX, i)
 trY += np.random.randn(*trX.shape) * 1.5
 
+# input and output
 X = tf.constant(trX, dtype=tf.float32)
 Y = tf.constant(trY, dtype=tf.float32)
 w = tf.Variable([0.] * len(trY_coeffs), name="parameters")
